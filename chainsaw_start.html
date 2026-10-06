@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>电锯人 · 自定义开局 | NIKINIKO</title>
+</head>
+<body>
+<!-- CSS 放在 body 中，便于 jQuery $('body').load(URL) 直接载入。所有样式只作用于本组件。 -->
+<style>
+  .csm-app{--bg:#131415;--panel:#1c1e20;--ink:#f1eee7;--muted:#a9aaab;--line:#393c3f;--orange:#ff743d;--mint:#b3c3a4;max-width:1120px;margin:0 auto;background:var(--bg);color:var(--ink);font:15px/1.65 "Microsoft YaHei","PingFang SC",system-ui,sans-serif;padding:22px;box-sizing:border-box;color-scheme:dark;border-radius:6px;text-align:left}
+  .csm-app *{box-sizing:border-box}.csm-app [hidden]{display:none!important}.csm-app button,.csm-app input,.csm-app select,.csm-app textarea{font:inherit}.csm-app button{cursor:pointer}.csm-app button:disabled{opacity:.5;cursor:default}.csm-app :focus-visible{outline:2px solid var(--orange);outline-offset:4px}.csm-app h1,.csm-app h2,.csm-app h3,.csm-app p{margin:0}.csm-app a{color:var(--mint)}
+  .csm-app .csm-top{display:flex;justify-content:space-between;align-items:center;font:11px/1.4 ui-monospace,monospace;letter-spacing:2px;margin:0 0 18px;color:var(--muted)}.csm-app .csm-dot{width:7px;height:7px;background:var(--orange);display:inline-block;margin-right:8px;box-shadow:0 0 15px #ff743d70}
+  .csm-app .csm-hero{position:relative;overflow:hidden;min-height:320px;border:1px solid var(--line);background:#232524;isolation:isolate}.csm-app .csm-hero-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}.csm-app .csm-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#131415e8 0%,#13141580 50%,#13141522);z-index:-1}.csm-app .csm-hero-copy{padding:38px;max-width:540px}.csm-app .csm-kicker{color:var(--orange);font:11px/1.6 ui-monospace,monospace;letter-spacing:3px;margin-bottom:12px}.csm-app h1{font-size:clamp(38px,7vw,72px);line-height:.95;letter-spacing:-3px;font-weight:950}.csm-app h1 span{color:var(--orange)}.csm-app .csm-hero-sub{font-size:17px;margin:19px 0 10px;letter-spacing:4px}.csm-app .csm-hero-desc{font-size:13px;color:#c2c3bd;max-width:340px}.csm-app .csm-stamp{position:absolute;right:24px;bottom:20px;border:1px solid #e3e2ca60;color:#e3e2ca;transform:rotate(-6deg);padding:4px 12px;font:11px ui-monospace,monospace;letter-spacing:3px}
+  .csm-app .csm-brand{position:relative;display:flex;align-items:center;flex-direction:column;padding:0 0 24px;border-bottom:1px solid var(--line);margin-bottom:22px}.csm-app .csm-avatar{margin-top:-34px;width:84px;height:84px;border:4px solid var(--bg);outline:1px solid var(--line);background:#2a2d2b;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:50%;z-index:1}.csm-app .csm-avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}.csm-app .csm-avatar-placeholder{font:10px ui-monospace,monospace;color:#adb6a5;text-align:center;letter-spacing:1px}.csm-app .csm-avatar-placeholder svg{width:28px;height:28px;display:block;margin:0 auto 3px}.csm-app .csm-brand-name{font-size:19px;font-weight:800;letter-spacing:3px;margin-top:10px}.csm-app .csm-brand small{color:var(--muted);font-size:12px;letter-spacing:3px}
+  .csm-app .csm-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:24px}.csm-app .csm-toolbar p{margin-left:auto;color:var(--muted);font-size:12px}.csm-app .csm-btn{border:1px solid var(--line);border-radius:3px;background:#27292b;color:var(--ink);padding:10px 16px;line-height:1.45;transition:background .15s,border-color .15s}.csm-app .csm-btn:hover{background:#343739;border-color:#656769}.csm-app .csm-primary{background:var(--orange);border-color:var(--orange);color:#171513;font-weight:800}.csm-app .csm-primary:hover{background:#ff946a;border-color:#ff946a}.csm-app .csm-ghost{background:transparent}.csm-app .csm-small{padding:5px 10px;font-size:12px}.csm-app .csm-delete{color:#e8a394;background:transparent}.csm-app .csm-layout{display:grid;grid-template-columns:185px minmax(0,1fr);gap:24px;align-items:start}.csm-app .csm-sidebar{position:sticky;top:16px}.csm-app .csm-sidebar-title{font:10px ui-monospace,monospace;letter-spacing:2px;color:var(--muted);padding:5px 10px 12px}.csm-app .csm-nav{display:flex;flex-direction:column;gap:5px}.csm-app .csm-nav button{background:none;border:0;text-align:left;color:#c6c7c2;padding:10px;border-left:2px solid var(--line);font-size:13px}.csm-app .csm-nav button:hover{border-color:var(--orange);color:var(--orange);background:#ffffff04}.csm-app .csm-nav b{display:inline-block;margin-right:9px;color:#717779;font:11px ui-monospace,monospace}.csm-app .csm-side-note{font-size:11px;color:var(--muted);margin:26px 10px 0;line-height:1.9}.csm-app .csm-side-note strong{color:var(--mint);font-weight:500}
+  .csm-app .csm-section{padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-bottom:16px;scroll-margin-top:16px}.csm-app .csm-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.csm-app h2{font-size:19px;letter-spacing:1px}.csm-app .csm-index{font:11px ui-monospace,monospace;color:var(--orange);margin-right:9px}.csm-app .csm-intro{font-size:12px;color:var(--muted);margin:-7px 0 18px}.csm-app .csm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.csm-app .csm-field{display:block;min-width:0}.csm-app .csm-field>span,.csm-app .csm-label{display:block;font-size:12px;color:#c8cdc5;margin-bottom:7px}.csm-app .csm-field em{font-style:normal;font-size:10px;color:#8e9592;margin-left:5px}.csm-app input,.csm-app select,.csm-app textarea{display:block;width:100%;min-width:0;color:var(--ink);background:#131517;border:1px solid #42474a;border-radius:3px;padding:10px 12px;line-height:1.55}.csm-app select{min-height:45px}.csm-app textarea{resize:vertical;min-height:90px}.csm-app input::placeholder,.csm-app textarea::placeholder{color:#838987;opacity:1}.csm-app input:focus,.csm-app select:focus,.csm-app textarea:focus{border-color:var(--orange)}.csm-app .csm-wide{grid-column:1/-1}.csm-app .csm-hint{font-size:11px;color:var(--muted);margin-top:7px}.csm-app .csm-note{padding:11px 14px;border-left:2px solid var(--mint);background:#b3c3a409;color:#bec8b7;font-size:12px;margin:14px 0}.csm-app .csm-list{display:flex;flex-direction:column;gap:12px}.csm-app .csm-item{border:1px solid var(--line);border-left:2px solid #555f51;padding:16px;background:#181a1c}.csm-app .csm-item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:12px;color:var(--mint)}.csm-app .csm-add{width:100%;margin-top:12px;border-style:dashed}.csm-app .csm-empty{color:#9ba29e;border:1px dashed var(--line);padding:18px;font-size:12px;text-align:center}.csm-app .csm-races{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.csm-app .csm-races label{flex:1;min-width:85px;position:relative}.csm-app .csm-races input{width:1px;height:1px;opacity:0;position:absolute}.csm-app .csm-races span{display:block;border:1px solid var(--line);background:#141618;border-radius:3px;padding:11px;text-align:center;cursor:pointer;font-size:13px}.csm-app .csm-races input:checked+span{color:var(--orange);border-color:var(--orange);background:#ff743d0b}.csm-app .csm-races input:focus-visible+span{outline:2px solid var(--orange);outline-offset:3px}.csm-app details{font-size:11px;color:var(--muted);margin-top:15px}.csm-app summary{cursor:pointer;color:var(--mint)}.csm-app details p{margin-top:8px}.csm-app .csm-bottom{display:flex;gap:10px;justify-content:space-between;align-items:center;margin:24px 0 14px}.csm-app .csm-bottom p{font-size:12px;color:var(--muted)}.csm-app .csm-summary{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}.csm-app .csm-tag{font-size:11px;padding:3px 9px;border:1px solid #56614e;color:var(--mint)}.csm-app .csm-preview-text{min-height:420px;font:13px/1.8 "Microsoft YaHei",sans-serif;white-space:pre-wrap}.csm-app .csm-preview-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.csm-app .csm-footer{border-top:1px solid var(--line);margin-top:28px;padding-top:16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#828886;font:10px/1.7 ui-monospace,monospace;letter-spacing:1px}.csm-app .csm-status{min-height:24px;font-size:12px;color:var(--mint);margin-bottom:12px;overflow-wrap:anywhere}.csm-app .csm-error{color:#ffac95}.csm-app .csm-reset-confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#331f17;padding:12px;border:1px solid #78412c;margin-bottom:16px;font-size:12px}
+  @media(max-width:760px){.csm-app{padding:14px}.csm-app .csm-layout{grid-template-columns:1fr;gap:12px}.csm-app .csm-sidebar{position:static}.csm-app .csm-nav{flex-direction:row;flex-wrap:wrap;gap:4px}.csm-app .csm-nav button{padding:6px 9px}.csm-app .csm-sidebar-title,.csm-app .csm-side-note{display:none}.csm-app .csm-section{padding:18px}.csm-app .csm-hero-copy{padding:28px 22px}.csm-app .csm-hero{min-height:300px}.csm-app .csm-hero:after{background:linear-gradient(90deg,#131415eb,#13141566)}.csm-app .csm-toolbar p{width:100%;margin-left:0}.csm-app .csm-top{font-size:9px;letter-spacing:1px}.csm-app .csm-bottom{align-items:flex-start;flex-direction:column}.csm-app .csm-bottom .csm-btn{width:100%}}
+  @media(max-width:460px){.csm-app .csm-grid{grid-template-columns:1fr}.csm-app .csm-hero-desc{max-width:230px}.csm-app .csm-stamp{font-size:9px;right:14px}.csm-app .csm-toolbar .csm-btn{flex:1;padding:10px 8px}.csm-app .csm-item{padding:12px}.csm-app .csm-section-head h2{font-size:17px}}
+  @media(prefers-reduced-motion:reduce){.csm-app *{scroll-behavior:auto!important;transition:none!important}}
+</style>
+<main class="csm-app" data-csm-app>
+  <div class="csm-top"><span><i class="csm-dot"></i>PUBLIC SAFETY / PERSONAL FILE</span><span>VOL. 01 — YOUR STORY</span></div>
+  <header class="csm-hero">
+    <!-- 主图默认是内置 SVG 插画。设置下方脚本 ASSETS.hero 即可换成自己的图片。 -->
+    <svg class="csm-hero-art" data-art viewBox="0 0 1100 400" preserveAspectRatio="xMaxYMid slice" role="img" aria-label="电锯人主题插画：橙色电锯头与西装剪影">
+      <rect width="1100" height="400" fill="#a5ae96"/><path d="M0 280L1100 70V400H0Z" fill="#66725f"/><path d="M0 308L1100 98" stroke="#dce0c4" stroke-width="2"/>
+      <path d="M810 -40L1130 30 1020 270 670 140Z" fill="#d7d8bb" opacity=".22"/>
+      <g fill="#242c27" opacity=".25"><path d="M560 280V85H590V280ZM615 300V160H643V300ZM1030 240V60H1060V240Z"/><path d="M520 210H1100V225H520Z"/></g>
+      <g transform="translate(715 28) rotate(-10 150 160)">
+        <path d="M96 212L20 318 -4 430H320L298 319 230 211Z" fill="#171e1d" stroke="#0c1111" stroke-width="6"/>
+        <path d="M120 203L104 282 162 319 212 264 204 204Z" fill="#dedcc7"/><path d="M152 230L178 230 168 260 193 362 150 383 148 265Z" fill="#752d22"/>
+        <path d="M84 229L57 317 125 301 139 353 148 275Z" fill="#353d37"/><path d="M224 224L262 294 211 293 188 350 181 273Z" fill="#353d37"/>
+        <path d="M99 112L218 115 227 213 186 243 112 207Z" fill="#3f4b3f" stroke="#141a18" stroke-width="7"/>
+        <path d="M115 156L213 166 203 213 156 228 118 204Z" fill="#141a18"/>
+        <path d="M117 176L130 194 144 182 156 207 170 188 184 207 201 187" fill="none" stroke="#ede3bf" stroke-width="9"/>
+        <path d="M76 85L129 44 221 51 244 87 231 164 96 153Z" fill="#ed692e" stroke="#161c19" stroke-width="7"/>
+        <path d="M95 84L156 61 217 72 223 100 104 112Z" fill="#ff9c4b"/>
+        <path d="M68 110L110 103 100 145 61 138Z" fill="#342b21" stroke="#151b18" stroke-width="5"/>
+        <path d="M166 92L411 22 427 51 179 127Z" fill="#dadac7" stroke="#202822" stroke-width="7"/>
+        <path d="M181 108L412 40" stroke="#73816a" stroke-width="8"/>
+        <path d="M195 83L198 66 211 78 227 56 239 69 256 47 269 60 286 38 297 52 315 28 328 42 347 19 359 32 379 8 390 20 409 1 419 18" fill="none" stroke="#222b23" stroke-width="7"/>
+        <path d="M199 125L215 137 225 120 245 128 255 110 274 120 286 100 307 110 317 90 337 101 347 82 368 91 379 73 399 82 410 60 429 67" fill="none" stroke="#222b23" stroke-width="7"/>
+        <path d="M88 97L80 58 105 35 140 35 145 56" fill="none" stroke="#222b23" stroke-width="13"/>
+        <path d="M28 293L-19 366 -54 348 7 277Z" fill="#e0d6bc"/><path d="M-54 343L-182 237 -198 254 -61 374Z" fill="#d3d4bc" stroke="#212a22" stroke-width="6"/>
+      </g>
+      <g fill="#833728"><path d="M917 38L998 9 979 30 1021 20 971 57Z"/><circle cx="999" cy="57" r="5"/><circle cx="939" cy="73" r="3"/><path d="M553 306L628 285 599 308 646 303 584 326Z"/></g>
+      <path d="M0 372L1100 372" stroke="#30382c" stroke-width="2" opacity=".4"/>
+    </svg>
+    <img class="csm-hero-art" data-hero-image hidden alt="电锯人主题主图">
+    <div class="csm-hero-copy"><p class="csm-kicker">CHAINSAW MAN · CUSTOM START</p><h1>CHAINSAW<br><span>MAN.</span></h1><p class="csm-hero-sub">把你的故事，拉响。</p><p class="csm-hero-desc">选择立场，签下代价。<br>从一份档案开始，走进恶魔横行的世界。</p></div>
+    <span class="csm-stamp">NO LIFE WITHOUT A PRICE</span>
+  </header>
+  <div class="csm-brand"><div class="csm-avatar"><div class="csm-avatar-placeholder" data-avatar-placeholder><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="16" cy="10" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M6 29V26a10 10 0 0120 0v3" stroke="currentColor" stroke-width="1.5"/></svg>AVATAR</div><img data-avatar-image hidden alt="NIKINIKO 头像"></div><div class="csm-brand-name">NIKINIKO</div><small>来自类脑社区</small></div>
+  <div class="csm-toolbar"><button class="csm-btn csm-primary" type="button" data-action="random-all">⚄ 随机全部</button><button class="csm-btn csm-ghost" type="button" data-action="reset">重置档案</button><button class="csm-btn" type="button" data-action="preview">最终预览 ↗</button><p>每个分区均可单独抽取，自定义内容不进入抽取池。</p></div>
+  <div class="csm-reset-confirm" data-reset-confirm hidden><span>重置将清空当前填写内容。</span><button type="button" class="csm-btn csm-small csm-delete" data-action="confirm-reset">确认重置</button><button type="button" class="csm-btn csm-small" data-action="cancel-reset">保留档案</button></div>
+  <div class="csm-status" role="status" aria-live="polite" data-status>档案待建立。可以直接填写，也可以先抽取一份开局。</div>
+  <div class="csm-layout">
+    <aside class="csm-sidebar"><div class="csm-sidebar-title">BUILD YOUR FILE</div><nav class="csm-nav" aria-label="档案分区"><button type="button" data-go="identity"><b>01</b>身份档案</button><button type="button" data-go="abilities"><b>02</b>能力档案</button><button type="button" data-go="contracts"><b>03</b>契约与本源</button><button type="button" data-go="items"><b>04</b>随身物资</button><button type="button" data-go="world"><b>05</b>剧情切入</button><button type="button" data-go="preview"><b>06</b>最终预览</button></nav><p class="csm-side-note"><strong>你的选择，决定起点。</strong><br>时间与地点由 AI 根据篇章、节点和切入方式合理生成。<br><br>等级不需填写；战力以 BP 为主。</p></aside>
+    <div>
+      <section class="csm-section" data-section="identity"><div class="csm-section-head"><h2><span class="csm-index">01 /</span>身份档案</h2><button type="button" class="csm-btn csm-small" data-random="identity">⚄ 随机身份</button></div><p class="csm-intro">先选种族，再选择所属与职位。身份会随所属自动更新。</p><div data-identity></div></section>
+      <section class="csm-section" data-section="abilities"><div class="csm-section-head"><h2><span class="csm-index">02 /</span>能力档案</h2><button type="button" class="csm-btn csm-small" data-random="abilities">⚄ 随机能力</button></div><p class="csm-intro">为每项能力写下名称、描述与熟练度；可以从预设开始，再自行修改。</p><div class="csm-list" data-abilities></div><button type="button" class="csm-btn csm-add" data-action="add-ability">＋ 添加能力</button></section>
+      <section class="csm-section" data-section="contracts"><div class="csm-section-head"><h2><span class="csm-index">03 /</span>契约与本源</h2><button type="button" class="csm-btn csm-small" data-random="contracts">⚄ 随机本分区</button></div><div data-contracts></div><details><summary>契约预设说明</summary><p>原作同一恶魔对不同人的条款可能不同。预设注明参考角色或条款，不能保证玩家获得同等待遇。未来恶魔的“寄宿右眼”属于早川秋的特殊条件，未作为通用抽取条款。章节点较早时，AI 应交代获取途径，避免直接复制原作人物经历。</p><p>契约资料参考：<a href="https://chainsaw-man.fandom.com/wiki/Contract" target="_blank" rel="noopener noreferrer">原作契约整理</a>。自我契约是本角色卡的开局表达约定；魔人的本源、武器人的融合关系会单独输出。</p></details></section>
+      <section class="csm-section" data-section="items"><div class="csm-section-head"><h2><span class="csm-index">04 /</span>随身物资</h2><button type="button" class="csm-btn csm-small" data-random="items">⚄ 随机物资</button></div><div class="csm-grid"><label class="csm-field"><span>金钱 <em>选填 · 日元</em></span><input type="number" min="0" max="999999999999" step="1" data-field="money" placeholder="留空由 AI 合理补全"></label><div class="csm-field"><span>物资提示</span><p class="csm-hint">武士刀、折叠刀、证件、旧打火机、创可贴……也可以写“无”。</p></div><label class="csm-field csm-wide"><span>持有物 <em>自由文本</em></span><textarea data-field="inventory" placeholder="例如：一把旧武士刀、公安证件、半包香烟、一张咖啡店收据。可补充数量、用途或来历。"></textarea></label></div></section>
+      <section class="csm-section" data-section="world"><div class="csm-section-head"><h2><span class="csm-index">05 /</span>剧情切入</h2><button type="button" class="csm-btn csm-small" data-random="world">⚄ 随机切入</button></div><p class="csm-intro">篇章与剧情节点严格联动。选择你想进入的那一刻。</p><div data-world></div><div class="csm-note">当前时间、当前地点：交给 AI 根据篇章、剧情节点和你的切入方式合理生成。</div></section>
+      <div class="csm-bottom"><p>所有选择已就绪？检查你的开局档案。</p><button type="button" class="csm-btn csm-primary" data-action="preview">生成最终开局文本 ↗</button></div>
+      <section class="csm-section" data-section="preview" hidden><div class="csm-section-head"><h2><span class="csm-index">06 /</span>最终预览</h2><button type="button" class="csm-btn csm-small" data-action="hide-preview">收起</button></div><div class="csm-summary" data-summary></div><label class="csm-field"><span>开局提示词 <em>修改上方档案会同步更新</em></span><textarea class="csm-preview-text" data-output readonly aria-label="最终开局提示词"></textarea></label><div class="csm-preview-actions"><button type="button" class="csm-btn csm-primary" data-action="copy">复制开局文本</button><button type="button" class="csm-btn" data-action="download">下载为 TXT</button></div><p class="csm-hint">复制后粘贴到酒馆输入框并发送。此页面不会自动发送消息。</p></section>
+    </div>
+  </div>
+  <footer class="csm-footer"><span>NIKINIKO / 来自类脑社区</span><span>CHAINSAW MAN — CUSTOM START / 01</span></footer>
+</main>
+<script>
+/*
+ * 电锯人自定义开局 · 单文件 / 无依赖
+ * 可本地打开，也可通过 jQuery $('body').load('你的完整HTML地址') 载入。
+ * 不要在 .load 的 URL 后添加片段选择器，否则 jQuery 会移除脚本。
+ * 在 iframe 或单独的消息容器内使用；$('body').load 会替换所处文档的 body。
+ * 所有查询均限制在组件内，不读取酒馆聊天、不自动发送消息、不请求网络。
+ */
+(function () {
+  'use strict';
+  // ===== 图片替换位置：请使用 HTTPS 完整地址；相对地址在酒馆内会相对于酒馆页面解析。 =====
+  const ASSETS = {
+    hero: '',   // 主图：如 https://cdn.jsdelivr.net/gh/用户名/仓库@main/assets/hero.webp
+    avatar: ''  // 中心头像：如 https://cdn.jsdelivr.net/gh/用户名/仓库@main/assets/avatar.webp
+  };
+  const CUSTOM = '__custom__';
+  const RACES = ['人类', '恶魔', '魔人', '武器人'];
+  const PROFICIENCIES = ['入门', '熟练', '精通'];
+  // 职位为适用于同人开局的创作扩展，不宣称是原作官方职级。
+  const FACTIONS = {
+    '普通人': {human:['上班族','商店店员','咖啡店服务员','流浪者','自由职业者'], races:['人类']},
+    '公安特异4课': {human:['新人恶魔猎人','一线恶魔猎人','行动组组长','情报联络员','训练教官'], races:RACES, other:{'恶魔':['受监管合作恶魔','恶魔行动顾问','恶魔战斗队员'],'魔人':['魔人战斗队员','魔人侦察队员','受监管新人魔人'],'武器人':['武器人行动队员','武器人突击手','受监管武器人']}},
+    '公安常规对魔科': {human:['见习探员','对魔科探员','现场指挥员','后勤专员','案件调查员'], races:['人类']},
+    '民间恶魔猎人': {human:['独立猎人','猎人事务所助理','悬赏猎人','事务所负责人','护卫猎人'], races:['人类','武器人'], other:{'武器人':['独立武器人猎人','武器人保镖','事务所武器人合作者']}},
+    '苏联特工': {human:['潜伏特工','情报员','行动指挥官','联络员','特殊训练教官'], races:['人类','武器人'], other:{'武器人':['武器人潜伏特工','实验计划行动人员','武器人突击特工']}},
+    '美国情报机构': {human:['驻外情报员','秘密行动人员','技术侦察员','行动主管','情报分析员'], races:['人类','武器人'], other:{'武器人':['秘密武器人行动员','武器人护卫','特殊行动突击手']}},
+    '黑帮组织': {human:['基层打手','收债人','军火中间人','组织干部','地下联络员'], races:RACES, other:{'恶魔':['交易合作恶魔','组织豢养恶魔','地下守卫恶魔'],'魔人':['魔人打手','魔人看守','地下魔人雇员'],'武器人':['武器人打手','组织王牌保镖','武器人行动干部']}},
+    '学园': {human:['高中生','大学生','学生会成员','教师','校内职员'], races:['人类']},
+    '医疗与科研机构': {human:['急救医生','护理人员','恶魔研究员','实验助理','法医'], races:['人类']},
+    '新闻与传媒': {human:['社会新闻记者','摄影记者','编辑','现场调查员','自由撰稿人'], races:['人类']},
+    '日本政府': {human:['对魔事务联络官','政策研究员','秘密调查员','安全顾问','外交联络员'], races:['人类']},
+    '国际刺客组织': {human:['独行刺客','伪装专家','情报掮客','接应人员','刺客小队长'], races:['人类','武器人'], other:{'武器人':['武器人刺客','特殊暗杀人员','武器人护卫']}},
+    '自由恶魔势力': {human:['恶魔交易中间人','恶魔追随者','人类代理人','地下谈判人'], races:RACES, other:{'恶魔':['独行恶魔','领地首领','游荡恶魔','恶魔交易者'],'魔人':['独行魔人','流浪魔人','恶魔势力信使'],'武器人':['独行武器人','恶魔势力合作者','地下武器人']}},
+    '地狱势力': {human:[], races:['恶魔'], other:{'恶魔':['地狱游荡者','领地守卫','弱小恶魔','地狱领地首领']}}
+  };
+  // 用户提供的篇章—剧情节点总表，保留原顺序与名称。
+  const CHAPTERS = {
+    '公安入职篇':['贫困猎人','黑帮背叛','波奇塔契约','电锯人初战','玛奇玛收编','早川秋','公安日常','帕瓦搭档'],
+    '蝙蝠恶魔篇':['喵子的交易','前往藏身处','帕瓦背叛','蝙蝠恶魔现身','电锯人迎战','水蛭恶魔袭击','早川秋救援','帕瓦入住','玛奇玛的约定'],
+    '永恒恶魔篇':['枪之恶魔肉片','酒店调查','八楼循环','永恒恶魔交易','小队内讧','电次跳入','三日鏖战','恶魔求死','新人欢迎会','姬野的夜晚'],
+    '武士刀篇':['日常遇袭','餐馆枪击','姬野献身','电次争夺战','京都反击','公安重组','岸边训练','秋的余命','未来恶魔契约','反攻准备','特异4课突入','Easy Revenge','电锯对武士刀','安魂曲'],
+    '炸弹恶魔篇':['电影约会','雨中邂逅','咖啡店相识','夜校约会','泳池之夜','暴雨杀手','烟花告白','炸弹身份暴露','炸弹追杀','二课攻防','台风恶魔参战','海中决战','咖啡店之约','巷口截杀'],
+    '国际刺客篇':['电锯人的心脏','刺客入境','假身份渗透','人偶袭击','光熙突入','商场混战','托尔卡的诅咒','坠入地狱','暗之恶魔','玛奇玛救援','黑暗圣诞老人','燃烧的电锯','万圣节','玛奇玛收尾'],
+    '枪之恶魔篇':['帕瓦的恐惧','北海道扫墓','枪之恶魔真相','未来预言','秋的选择','支配契约','枪之恶魔来袭','玛奇玛迎击','门外的秋','打雪仗','最坏的死亡'],
+    '支配恶魔篇':['秋的遗产','玛奇玛的狗','帕瓦之死','幸福破坏','复活之日','地狱英雄','汉堡店救援','小红约会','武器人围剿','英雄弱化','帕瓦归来','最后的契约','普通人的愿望','墓地决战','真正的电次','吃掉玛奇玛','那由多'],
+    '沙盒模式':['自由演化']
+  };
+  const CONTRACTS = [
+    {id:'fox',name:'狐狸恶魔',description:'召唤狐狸恶魔的部分身体攻击；可调用的部位取决于恶魔认可程度。',cost:'献出部分皮肤或肉体（参考早川秋；具体支付部位依条款）。',limit:'狐狸恶魔可拒绝不合意的召唤；不会默认获得所有身体部位。'},
+    {id:'ghost',name:'幽灵恶魔',description:'使用幽灵恶魔的一只手，进行触碰、抓取或攻击。',cost:'献出右眼（参考姬野的一只手契约，非全身召唤）。',limit:'仅一只手；全身召唤不包含在此契约中。'},
+    {id:'curse',name:'诅咒恶魔',description:'通过钉状武器与规定命中条件发动诅咒。',cost:'消耗寿命（参考早川秋；具体折寿量由 AI 按契约与实际使用合理处理）。',limit:'须满足连续命中等发动条件，不能无条件直接杀死目标。'},
+    {id:'snake',name:'蛇恶魔',description:'召唤蛇恶魔，进行吞噬或攻击。',cost:'每次调用献出一枚指甲（参考泽渡茜）。',limit:'依约使用手势召唤；能力范围由契约约定。'},
+    {id:'future-life',name:'未来恶魔 · 寿命条款',description:'借用未来恶魔的预知力量；具体预知范围由契约约定。',cost:'献出一半寿命（参考原作一位公安契约者）。',limit:'不会默认获得早川秋的特殊右眼寄宿条款。'},
+    {id:'future-senses',name:'未来恶魔 · 感官条款',description:'借用未来恶魔的预知力量；具体预知范围由契约约定。',cost:'献出视觉、味觉与嗅觉（参考原作另一位公安契约者）。',limit:'应在开局状态中体现失去上述感官。'},
+    {id:'octopus',name:'章鱼恶魔',description:'借用章鱼恶魔的触手进行抓取、遮蔽或辅助行动。',cost:'原作未公开完整代价；请 AI 明确标为本次开局的原创条款后合理补全。',limit:'不宣称原创补充条款为原作设定。'}
+  ];
+  const ABILITIES = [
+    ['刀剑格斗','掌握基本刀剑招式、格挡与近身战斗。'],['徒手格斗','使用拳脚、摔投与关节控制应对近身威胁。'],['战术射击','熟悉枪械安全、瞄准与掩体行动。'],['现场侦察','观察痕迹、危险征兆与撤离路线。'],['急救处理','止血、包扎并协助伤员撤离。'],['潜伏伪装','借助身份掩护和环境融入降低被发现的可能。'],['情报分析','整理线索，推断任务目标与行动动机。'],['恶魔知识','辨认常见恶魔特征，理解契约风险。'],['谈判交涉','在危机中交换条件并寻找妥协空间。'],['街头求生','寻找临时食物、住处并规避街头危险。']
+  ];
+  const DEMONS = ['血之恶魔','蝙蝠恶魔','鲨鱼恶魔','蜘蛛恶魔','狐狸恶魔','蛇恶魔'];
+  const WEAPONS = ['刀之恶魔','炸弹恶魔','弓之恶魔','枪之恶魔','长剑恶魔','鞭之恶魔','火焰喷射器恶魔'];
+  const ENTRIES = ['作为临时协助者参与事件，从与一位相关人物的初次接触切入。','原本只是路过，却在事件波及自己时不得不做出选择。','正在执行一项独立委托，调查线索时与当前节点的事件相遇。','从事件发生前的一次日常交谈切入，逐步揭示自己的立场。','在事件附近救助一名受伤者，由此卷入相关冲突。','以隐瞒真实身份的访客进入场景，先观察再决定如何行动。'];
+  const INVENTORY = {
+    '普通人':['钱包、钥匙、旧打火机','便当、公交票、一把折叠伞'],
+    '公安特异4课':['公安证件、制式长刀、急救包','公安证件、备用衬衫、任务笔记'],
+    '公安常规对魔科':['公安证件、配发武器、对讲机'],
+    '民间恶魔猎人':['旧武士刀、委托书、绷带'],
+    '苏联特工':['掩护身份文件、袖珍相机、折叠刀'],
+    '美国情报机构':['掩护身份文件、联络便签、急救包'],
+    '黑帮组织':['短刀、收债账本、廉价香烟'],
+    '学园':['书包、课本、学生证、零钱包'],
+    '医疗与科研机构':['工作证、手套、急救工具、记录本'],
+    '新闻与传媒':['相机、采访证、笔记本'],
+    '日本政府':['工作证、密封文件、公文包'],
+    '国际刺客组织':['伪造证件、隐蔽武器、路线地图'],
+    '自由恶魔势力':['无固定持有物，仅带一件拾来的小饰品'],
+    '地狱势力':['无']
+  };
+  const pick = a => a[Math.floor(random() * a.length)];
+  function random() { if (globalThis.crypto && globalThis.crypto.getRandomValues) { const a = new Uint32Array(1); globalThis.crypto.getRandomValues(a); return a[0] / 4294967296; } return Math.random(); }
+  const escape = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const options = (values, selected) => values.map(v => '<option value="' + escape(v) + '"' + (v === selected ? ' selected' : '') + '>' + escape(v === CUSTOM ? '自定义（不参与抽取）' : v) + '</option>').join('');
+  const field = (label, key, value, placeholder, wide) => '<label class="csm-field' + (wide ? ' csm-wide' : '') + '"><span>' + label + '</span><input data-field="' + key + '" value="' + escape(value) + '" placeholder="' + escape(placeholder || '') + '"></label>';
+  const textarea = (label, key, value, placeholder, wide) => '<label class="csm-field' + (wide ? ' csm-wide' : '') + '"><span>' + label + '</span><textarea data-field="' + key + '" placeholder="' + escape(placeholder || '') + '">' + escape(value) + '</textarea></label>';
+  const factionKeys = race => Object.keys(FACTIONS).filter(k => FACTIONS[k].races.includes(race));
+  const roles = (faction, race) => faction === CUSTOM ? [] : (race === '人类' ? FACTIONS[faction].human : (FACTIONS[faction].other[race] || []));
+  function defaults() { return {name:'',appearance:'',race:'人类',faction:'公安特异4课',customFaction:'',identity:'新人恶魔猎人',customIdentity:'',bp:'500',abilities:[],humanContracts:[],cores:{'恶魔':{name:'',description:''},'魔人':{name:'',description:''},'武器人':{name:'',description:'',cost:'',trigger:''}},money:'',inventory:'',chapter:'公安入职篇',node:'贫困猎人',entry:''}; }
+
+  document.querySelectorAll('[data-csm-app]:not([data-csm-ready])').forEach(function(root) {
+    root.setAttribute('data-csm-ready','true');
+    let state = defaults();
+    const q = s => root.querySelector(s);
+    let previewVisible = false;
+    function status(message, error) { q('[data-status]').textContent = message; q('[data-status]').classList.toggle('csm-error',!!error); }
+    function showImage(url, imageSelector, fallbackSelector) {
+      if (!url) return;
+      const img = q(imageSelector); img.onload = function() { img.hidden = false; q(fallbackSelector).setAttribute('hidden',''); }; img.onerror = function() { img.hidden = true; q(fallbackSelector).removeAttribute('hidden'); }; img.src = url;
+    }
+    showImage(ASSETS.hero,'[data-hero-image]','[data-art]'); showImage(ASSETS.avatar,'[data-avatar-image]','[data-avatar-placeholder]');
+    function renderIdentity() {
+      const factionList = factionKeys(state.race).concat(CUSTOM);
+      q('[data-identity]').innerHTML = '<span class="csm-label">种族</span><div class="csm-races">' + RACES.map(r => '<label><input type="radio" name="csm-race-' + instanceId + '" value="' + r + '" data-field="race"' + (r === state.race ? ' checked' : '') + '><span>' + r + '</span></label>').join('') + '</div><div class="csm-grid">' +
+        field('玩家名称 <em>选填</em>','name',state.name,'留空使用酒馆玩家名 {{user}}') + field('初始 BP','bp',state.bp,'用于战斗的初始参考值') +
+        '<label class="csm-field"><span>所属派系</span><select data-field="faction">' + options(factionList,state.faction) + '</select></label>' +
+        '<label class="csm-field"><span>身份 / 职位</span><select data-field="identity">' + options(roles(state.faction,state.race).concat(CUSTOM),state.identity) + '</select></label>' +
+        (state.faction === CUSTOM ? field('自定义所属 <em>必填</em>','customFaction',state.customFaction,'填写组织、阵营或个人立场') : '') +
+        (state.identity === CUSTOM ? field('自定义身份 <em>必填</em>','customIdentity',state.customIdentity,'填写此所属下的职位或身份') : '') +
+        textarea('外貌与背景 <em>选填</em>','appearance',state.appearance,'例如：短发，旧西装，左手留有伤疤；最近接到一份秘密委托。',true) + '</div><p class="csm-hint">等级不提供填写。BP 是本开局的自定义参考值，不是原作官方数值。当前可选 ' + (factionList.length-1) + ' 个预设所属；所属随种族适配。职位包含同人创作扩展。</p>';
+      q('[data-field="bp"]').type='number'; q('[data-field="bp"]').min='0'; q('[data-field="bp"]').max='999999999'; q('[data-field="bp"]').step='1';
+    }
+    function abilityOptions(selected) { return '<option value="">选择能力预设（选填）</option>' + ABILITIES.map((a,i) => '<option value="' + i + '"' + (String(i) === String(selected) ? ' selected' : '') + '>' + escape(a[0]) + '</option>').join(''); }
+    function renderAbilities() {
+      q('[data-abilities]').innerHTML = state.abilities.length ? state.abilities.map((a,i) => '<div class="csm-item" data-ability-index="' + i + '"><div class="csm-item-head"><span>ABILITY / ' + String(i+1).padStart(2,'0') + '</span><button type="button" class="csm-btn csm-small csm-delete" data-delete-ability="' + i + '" aria-label="删除能力 ' + (i+1) + '">删除</button></div><div class="csm-grid"><label class="csm-field csm-wide"><span>快速填入</span><select data-ability-preset="' + i + '">' + abilityOptions(a.preset) + '</select></label><label class="csm-field"><span>能力名称</span><input data-ability="name" value="' + escape(a.name) + '" placeholder="例如：刀剑格斗"></label><label class="csm-field"><span>熟练度</span><select data-ability="proficiency">' + options(PROFICIENCIES,a.proficiency) + '</select></label><label class="csm-field csm-wide"><span>能力描述</span><textarea data-ability="description" placeholder="能力效果、使用方式、限制……">' + escape(a.description) + '</textarea></label></div></div>').join('') : '<div class="csm-empty">尚未添加能力。留空时，AI 会按身份补全合理的基础能力。</div>';
+    }
+    function renderContracts() {
+      const area = q('[data-contracts]');
+      if (state.race === '人类') {
+        area.innerHTML = '<p class="csm-intro">人类可以没有契约，也可以与原作恶魔或自定义恶魔订立契约。</p><div class="csm-list">' + (state.humanContracts.length ? state.humanContracts.map((c,i) => '<div class="csm-item" data-contract-index="' + i + '"><div class="csm-item-head"><span>CONTRACT / ' + String(i+1).padStart(2,'0') + '</span><button type="button" class="csm-btn csm-small csm-delete" data-delete-contract="' + i + '" aria-label="删除契约 ' + (i+1) + '">删除</button></div><div class="csm-grid"><label class="csm-field csm-wide"><span>恶魔契约预设</span><select data-contract-preset="' + i + '">' + CONTRACTS.map(p => '<option value="' + p.id + '"' + (c.preset === p.id ? ' selected' : '') + '>' + escape(p.name) + '</option>').join('') + '<option value="' + CUSTOM + '"' + (c.preset === CUSTOM ? ' selected' : '') + '>自定义恶魔 / 代价（不参与抽取）</option></select></label>' + (c.preset === CUSTOM ? '<label class="csm-field csm-wide"><span>自定义恶魔名称 <em>必填</em></span><input data-contract="name" value="' + escape(c.name) + '" placeholder="例如：镜之恶魔"></label>' : '') + '<label class="csm-field csm-wide"><span>契约内容</span><textarea data-contract="description">' + escape(c.description) + '</textarea></label><label class="csm-field csm-wide"><span>契约代价 <em>必填 · 可以修改</em></span><textarea data-contract="cost" placeholder="明确身体、寿命、行为或其他交换条件；也可填写无">' + escape(c.cost) + '</textarea></label><label class="csm-field csm-wide"><span>限制与补充</span><textarea data-contract="limit" placeholder="触发条件、次数、约束……">' + escape(c.limit) + '</textarea></label></div></div>').join('') : '<div class="csm-empty">当前无恶魔契约。可以从零开始，也可以添加一份契约。</div>') + '</div><button type="button" class="csm-btn csm-add" data-action="add-contract">＋ 添加恶魔契约</button>';
+      } else {
+        const core = state.cores[state.race];
+        const label = state.race === '武器人' ? '融合的武器恶魔' : '自身恶魔本源';
+        const desc = state.race === '恶魔' ? '恶魔的契约按本卡约定表示为“与自己的契约”，代价固定为“无”。不会生成对其他恶魔的人类契约。' : state.race === '魔人' ? '魔人是恶魔占据人类尸体后的存在；本源能力不写成人类对外契约。' : '武器人记录与武器恶魔的融合关系、成立条件和变身触发方式；融合条件不自动假定为电次与波奇塔的条款。';
+        area.innerHTML = '<div class="csm-note">' + desc + '</div><div class="csm-grid"><label class="csm-field csm-wide"><span>' + label + ' <em>必填</em></span><input data-core="name" value="' + escape(core.name) + '" placeholder="' + (state.race === '武器人' ? '例如：刀之恶魔，或原创武器恶魔' : '例如：血之恶魔，或原创恶魔') + '"></label><label class="csm-field csm-wide"><span>本源能力与限制 <em>选填</em></span><textarea data-core="description" placeholder="写下能力、外形特征、弱点；留空由 AI 合理补全">' + escape(core.description) + '</textarea></label>' + (state.race === '武器人' ? '<label class="csm-field csm-wide"><span>融合条件 / 代价 <em>选填</em></span><textarea data-core="cost" placeholder="说明双方交换条件；留空由 AI 按本次原创关系补全">' + escape(core.cost) + '</textarea></label><label class="csm-field csm-wide"><span>变身触发方式 <em>选填</em></span><input data-core="trigger" value="' + escape(core.trigger) + '" placeholder="例如：拔出腕部金属栓；留空由 AI 补全"></label>' : '') + '</div>' + (state.race === '恶魔' ? '<p class="csm-hint">契约对象：自己　/　契约代价：无（固定）</p>' : '<p class="csm-hint">更换种族时各类契约草稿会保留，最终文本只输出当前种族的内容。</p>');
+      }
+    }
+    function renderWorld() {
+      q('[data-world]').innerHTML = '<div class="csm-grid"><label class="csm-field"><span>开局篇章</span><select data-field="chapter">' + options(Object.keys(CHAPTERS),state.chapter) + '</select></label><label class="csm-field"><span>剧情节点</span><select data-field="node">' + options(CHAPTERS[state.chapter],state.node) + '</select></label>' + textarea('以怎样的方式切入 <em>自由文本</em>','entry',state.entry,'例如：作为新调入特异4课的猎人，接到第一次任务。不要替我决定行动，从任务简报开始。',true) + '</div>';
+    }
+    function render() { renderIdentity(); renderAbilities(); renderContracts(); renderWorld(); q('[data-field="money"]').value=state.money; q('[data-field="inventory"]').value=state.inventory; refreshPreview(); }
+    function effectiveFaction() { return state.faction === CUSTOM ? state.customFaction.trim() : state.faction; }
+    function effectiveIdentity() { return state.identity === CUSTOM ? state.customIdentity.trim() : state.identity; }
+    function numbered(items, empty) { return items.length ? items.map((s,i) => (i+1) + '. ' + s).join('\n') : empty; }
+    function buildPrompt() {
+      const contractTexts = state.humanContracts.map(c => '恶魔：' + c.name.trim() + '\n   内容：' + (c.description.trim() || '由 AI 在契约范围内合理补全') + '\n   代价：' + c.cost.trim() + '\n   限制：' + (c.limit.trim() || '由 AI 按契约合理处理') + '\n   条款来源：' + (c.preset === CUSTOM ? '玩家自定义' : '参考原作示例；玩家可能调整，修改后的部分视为原创开局条款'));
+      const core = state.cores[state.race];
+      let contracts;
+      if (state.race === '人类') contracts = numbered(contractTexts,'无；不要擅自替玩家签订恶魔契约。');
+      else if (state.race === '恶魔') contracts = '契约对象：自己（' + core.name.trim() + '）\n契约内容：自身本源力量；此为本角色卡的自我契约表达约定。\n本源说明：' + (core.description.trim() || '由 AI 依据本源合理生成能力与限制') + '\n契约代价：无\n不附加对其他恶魔的人类契约。';
+      else if (state.race === '魔人') contracts = '对外恶魔契约：无\n恶魔本源：' + core.name.trim() + '\n本源说明：' + (core.description.trim() || '由 AI 生成合理能力、头部特征与限制') + '\n本源能力不视为人类对外契约。';
+      else contracts = '融合对象：' + core.name.trim() + '\n融合能力：' + (core.description.trim() || '由 AI 合理补全武器化能力与限制') + '\n融合条件 / 代价：' + (core.cost.trim() || '由 AI 合理补全，注明是本次原创融合条款') + '\n变身触发方式：' + (core.trigger.trim() || '由 AI 生成合理的身体触发装置') + '\n对外恶魔契约：本开局未另行设定。';
+      return '【电锯人 · 玩家自定义开局】\n\n请根据以下玩家档案创建开局，遵循角色卡与世界书的设定。\n\n【身份档案】\n玩家名称：' + (state.name.trim() || '{{user}}') + '\n种族：' + state.race + '\n所属：' + effectiveFaction() + '\n身份 / 职位：' + effectiveIdentity() + '\n初始 BP：' + state.bp + '\n外貌与背景：' + (state.appearance.trim() || '由 AI 在不替玩家做关键选择的前提下合理补全') + '\n等级：无需玩家设定；若角色卡需要该字段，按其规则初始化。战斗以 BP、能力、契约条件和实际环境综合判断，不仅凭等级决定。\n\n【能力】\n' + numbered(state.abilities.map(a => a.name.trim() + '｜熟练度：' + a.proficiency + '\n   描述：' + (a.description.trim() || '由 AI 合理补全')),'未指定；根据身份补全合理的基础能力，不擅自赋予强大特殊力量。') + '\n\n【契约与本源】\n' + contracts + '\n\n【随身物资】\n金钱：' + (state.money === '' ? '未指定；由 AI 按身份与背景合理生成（日元）' : state.money + ' 日元') + '\n持有物：' + (state.inventory.trim() || '未指定；由 AI 按身份与背景合理生成') + '\n\n【世界与切入】\n当前篇章：' + state.chapter + '\n当前剧情节点：' + state.node + '\n切入方式：' + (state.entry.trim() || '由 AI 安排与上述身份及节点相符的自然切入') + '\n当前时间：请 AI 根据当前篇章与节点生成合理的世界内时间；无需玩家填写，不使用现实当前日期，不捏造为官方精确日期。\n当前地点：请 AI 根据当前篇章、节点、所属与切入方式生成合理地点；无需玩家填写。\n\n【开局执行要求】\n1. 明确呈现合理的当前时间、地点和玩家状态，再展开开局场景；遵循角色卡既有输出格式。\n2. ' + (state.chapter === '沙盒模式' ? '以自由演化开始，不强行绑定原作剧情节点。' : '以所选剧情节点为当前起点，尊重此前已发生的关键事件；不要提前兑现后续剧情或强行让玩家复刻原作。') + '\n3. 玩家是原创角色，除非背景明确要求，不替代同名或同本源的原作角色；有重复本源时解释为本次开局的设定。\n4. 所属与职位须一致；解释跨地区组织、地狱出身或特殊契约参与当前节点的合理途径。\n5. 合同代价、能力限制与已牺牲的身体或感官必须体现在初始状态中；不把角色特例视为所有人的通用条件。\n6. 不代替玩家决定台词、行动或心理；让开局停留在玩家可以回应的情境。';
+    }
+    function validate() {
+      if (!effectiveFaction()) return '请填写自定义所属。';
+      if (!effectiveIdentity()) return '请填写自定义身份 / 职位。';
+      if (!/^\d+$/.test(state.bp) || Number(state.bp)>999999999) return '初始 BP 需为 0–999999999 的整数。';
+      if (state.money !== '' && (!/^\d+$/.test(state.money) || Number(state.money)>999999999999)) return '金钱需为 0–999999999999 的整数，或留空。';
+      if (state.abilities.some(a => !a.name.trim())) return '请补全能力名称，或删除空白能力。';
+      if (state.race === '人类' && state.humanContracts.some(c => !c.name.trim() || !c.cost.trim())) return '请补全每份契约的恶魔名称和代价，或删除未完成的契约。';
+      if (state.race !== '人类' && !state.cores[state.race].name.trim()) return '请填写当前种族的恶魔本源 / 融合对象。';
+      if (!CHAPTERS[state.chapter].includes(state.node)) return '剧情节点与篇章不匹配，请重新选择。';
+      return '';
+    }
+    function refreshPreview() {
+      if (!previewVisible) return;
+      const error = validate();
+      q('[data-output]').value = error ? '档案尚未完成：' + error + '\n\n补全后，预览会自动更新。' : buildPrompt();
+      q('[data-summary]').innerHTML = [state.race,effectiveFaction() || '所属待填',state.bp+' BP',state.chapter,state.node].map(v => '<span class="csm-tag">' + escape(v) + '</span>').join('');
+      q('[data-action="copy"]').disabled = !!error; q('[data-action="download"]').disabled = !!error;
+      if (!error && q('[data-status]').classList.contains('csm-error')) status('档案已补全，最终预览已更新。');
+    }
+    function scrollTo(section) { const el = q('[data-section="' + section + '"]'); el.scrollIntoView({behavior:globalThis.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',block:'start'}); }
+    function preview() { const error = validate(); previewVisible=true; q('[data-section="preview"]').hidden=false; refreshPreview(); status(error || '开局文本已生成。复制后即可粘贴到酒馆。',!!error); scrollTo('preview'); }
+    function newContract(p) { return {preset:p.id,name:p.name.split(' · ')[0],description:p.description,cost:p.cost,limit:p.limit}; }
+    function normaliseIdentity() {
+      if (state.faction !== CUSTOM && !factionKeys(state.race).includes(state.faction)) state.faction=state.race === '恶魔' ? '自由恶魔势力' : '公安特异4课';
+      const list=roles(state.faction,state.race);
+      if (state.faction === CUSTOM) state.identity=CUSTOM;
+      else if (state.identity !== CUSTOM && !list.includes(state.identity)) state.identity=list[0];
+    }
+    function randomIdentity() {
+      state.race=pick(RACES); state.faction=pick(factionKeys(state.race)); state.identity=pick(roles(state.faction,state.race));
+      state.name=pick(['凛','遥','朔','千寻','零','律','葵','真昼','伊织','诚']);
+      state.appearance=pick(['旧外套与磨损的鞋，随身带着一本写满短句的笔记。','衣着整洁，习惯观察出口，谈起过去时总是点到为止。','头发略显凌乱，手上有旧伤，身边留着一件不愿丢弃的小物。','深色衣装，目光警觉，在陌生人面前保持克制。']);
+      const base=state.race === '人类' ? [100,250,400,550,750] : [500,700,900,1200,1500]; state.bp=String(pick(base));
+      randomCoreIfEmpty();
+    }
+    function randomCoreIfEmpty() { if (state.race !== '人类' && !state.cores[state.race].name.trim()) randomCore(); }
+    function randomCore() {
+      const core=state.cores[state.race];
+      core.name=pick(state.race === '武器人' ? WEAPONS : DEMONS);
+      core.description='依据'+core.name+'的意象，生成与初始 BP 相符的能力、外形与弱点；作为原创玩家，不替代原作对应人物。';
+      if (state.race === '武器人') { core.cost='原创融合条款：双方维持共生，玩家为恶魔提供维持生存的血液；具体限制由 AI 合理补全。'; core.trigger=pick(['拔出腕部金属栓','扳动胸前机械扣','拉动颈侧拉环']); }
+    }
+    function randomAbilities() {
+      const pool=ABILITIES.map((a,i) => ({name:a[0],description:a[1],proficiency:pick(PROFICIENCIES),preset:String(i)}));
+      const amount=1+Math.floor(random()*3); state.abilities=[];
+      for(let i=0;i<amount;i++) { const at=Math.floor(random()*pool.length); state.abilities.push(pool.splice(at,1)[0]); }
+    }
+    function randomContracts() {
+      if(state.race !== '人类') { randomCore(); return; }
+      const pool=CONTRACTS.slice(); const amount=Math.floor(random()*3); state.humanContracts=[];
+      for(let i=0;i<amount;i++) { const at=Math.floor(random()*pool.length); state.humanContracts.push(newContract(pool.splice(at,1)[0])); }
+    }
+    function randomItems() { state.money=state.race === '恶魔' && state.faction === '地狱势力' ? '0' : String(pick([0,1200,5000,15000,30000,80000,150000])); state.inventory=pick(INVENTORY[state.faction] || ['钱包、旧外套、便签','短刀、急救包、任务笔记']); }
+    function randomWorld() { state.chapter=pick(Object.keys(CHAPTERS)); state.node=pick(CHAPTERS[state.chapter]); state.entry=pick(ENTRIES); }
+    // 唯一名称使同一页面出现多个组件时，种族单选不会互相干扰。
+    const instanceId = String(Date.now()) + '-' + String(Math.floor(random()*1000000000));
+    root.addEventListener('input', function(e) {
+      const el=e.target;
+      if (el.matches('input[type="radio"],select')) return;
+      if(el.dataset.field) state[el.dataset.field]=el.value;
+      else if(el.dataset.ability) { const item=el.closest('[data-ability-index]'); const a=state.abilities[Number(item.dataset.abilityIndex)]; a[el.dataset.ability]=el.value; a.preset=''; item.querySelector('[data-ability-preset]').value=''; }
+      else if(el.dataset.contract) state.humanContracts[Number(el.closest('[data-contract-index]').dataset.contractIndex)][el.dataset.contract]=el.value;
+      else if(el.dataset.core) state.cores[state.race][el.dataset.core]=el.value;
+      refreshPreview();
+    });
+    root.addEventListener('change', function(e) {
+      const el=e.target;
+      if(el.dataset.field) {
+        const key=el.dataset.field; state[key]=el.value;
+        if(key === 'race') { normaliseIdentity(); renderIdentity(); renderContracts(); status('种族已更新，所属与身份已适配；各类契约草稿仍保留。'); }
+        if(key === 'faction') { state.identity=state.faction === CUSTOM ? CUSTOM : roles(state.faction,state.race)[0]; renderIdentity(); }
+        if(key === 'identity') renderIdentity();
+        if(key === 'chapter') { state.node=CHAPTERS[state.chapter][0]; renderWorld(); }
+      }
+      if(el.hasAttribute('data-ability-preset')) {
+        const i=Number(el.dataset.abilityPreset), value=el.value;
+        if(value !== '') { state.abilities[i]={preset:value,name:ABILITIES[Number(value)][0],description:ABILITIES[Number(value)][1],proficiency:state.abilities[i].proficiency}; renderAbilities(); }
+      }
+      if(el.dataset.ability) state.abilities[Number(el.closest('[data-ability-index]').dataset.abilityIndex)][el.dataset.ability]=el.value;
+      if(el.hasAttribute('data-contract-preset')) {
+        const i=Number(el.dataset.contractPreset), value=el.value;
+        state.humanContracts[i]=value === CUSTOM ? {preset:CUSTOM,name:'',description:'',cost:'',limit:''} : newContract(CONTRACTS.find(c=>c.id===value)); renderContracts();
+      }
+      refreshPreview();
+    });
+    root.addEventListener('click', async function(e) {
+      const btn=e.target.closest('button'); if(!btn || !root.contains(btn)) return;
+      if(btn.dataset.go) { if(btn.dataset.go === 'preview') preview(); else scrollTo(btn.dataset.go); return; }
+      if(btn.dataset.random) {
+        const section=btn.dataset.random;
+        ({identity:randomIdentity,abilities:randomAbilities,contracts:randomContracts,items:randomItems,world:randomWorld})[section](); render();
+        status('本分区已抽取。自定义选项与玩家自定义内容未进入抽取池。'); return;
+      }
+      if(btn.hasAttribute('data-delete-ability')) { state.abilities.splice(Number(btn.dataset.deleteAbility),1); renderAbilities(); refreshPreview(); return; }
+      if(btn.hasAttribute('data-delete-contract')) { state.humanContracts.splice(Number(btn.dataset.deleteContract),1); renderContracts(); refreshPreview(); return; }
+      switch(btn.dataset.action) {
+        case 'random-all': randomIdentity(); randomAbilities(); randomContracts(); randomItems(); randomWorld(); render(); status('整份开局已抽取。可继续修改任意内容，再生成最终预览。'); break;
+        case 'reset': q('[data-reset-confirm]').hidden=false; break;
+        case 'cancel-reset': q('[data-reset-confirm]').hidden=true; break;
+        case 'confirm-reset': state=defaults(); previewVisible=false; q('[data-section="preview"]').hidden=true; q('[data-output]').value=''; q('[data-reset-confirm]').hidden=true; render(); status('档案已重置。'); break;
+        case 'add-ability': state.abilities.push({name:'',description:'',proficiency:'入门',preset:''}); renderAbilities(); refreshPreview(); break;
+        case 'add-contract': if(state.race === '人类') { state.humanContracts.push(newContract(CONTRACTS[0])); renderContracts(); refreshPreview(); } break;
+        case 'preview': preview(); break;
+        case 'hide-preview': previewVisible=false; q('[data-section="preview"]').hidden=true; break;
+        case 'copy': {
+          const error=validate(); if(error) { status(error,true); return; }
+          const content=buildPrompt(); let copied=false;
+          try { if(navigator.clipboard && globalThis.isSecureContext) { await navigator.clipboard.writeText(content); copied=true; } } catch (_) {}
+          if(!copied) { q('[data-output]').value=content; q('[data-output]').focus(); q('[data-output]').select(); try { copied=document.execCommand('copy'); } catch (_) {} }
+          status(copied ? '开局文本已复制，粘贴到酒馆输入框即可。' : '浏览器限制了自动复制。已选中文本，请按 Ctrl+C 或长按复制。',!copied); break;
+        }
+        case 'download': {
+          const error=validate(); if(error) { status(error,true); return; }
+          const blob=new Blob(['\ufeff'+buildPrompt()],{type:'text/plain;charset=utf-8'}); const url=URL.createObjectURL(blob); const link=document.createElement('a'); link.href=url; link.download='电锯人_开局档案.txt'; root.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),30000); status('开局 TXT 已生成。'); break;
+        }
+      }
+    });
+    render();
+  });
+})();
+</script>
+</body>
+</html>
